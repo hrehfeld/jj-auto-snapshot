@@ -3,7 +3,7 @@
   "Automatically snapshot the current JJ repository on every save.")
 
 (defvar jj-auto-snapshot-snapshot-command '("jj" "--no-pager" "status" "--color=never")
-  "Command to execute to snapshot the current repository. Should be a list of strings to hand to `start-process'.")
+  "Command to execute to snapshot the current repository. Should be a list of strings to hand to `start-process' or a function returning such list.")
 
 (defun jj-auto-snapshot-dominating-file ()
   (locate-dominating-file "." ".jj"))
