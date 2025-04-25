@@ -5,8 +5,8 @@
 (defvar jj-auto-snapshot-snapshot-command '("jj" "--no-pager" "status" "--color=never")
   "Command to execute to snapshot the current repository. Should be a list of strings to hand to `start-process' or a function returning such list.")
 
-(defun jj-auto-snapshot-dominating-file ()
-  (locate-dominating-file "." ".jj"))
+(defun jj-auto-snapshot-dominating-file (start-at-path)
+  (locate-dominating-file start-at-path ".jj"))
 
 (defun jj-auto-snapshot--take-snapshot()
   "Execute `jj status` to snapshot the current repository.
@@ -15,11 +15,11 @@ and if so executes `jj status` while logging the command output to
 the `jj-auto-snapshot--log-buffer-name' buffer.
 "
   (interactive)
-  (when (jj-auto-snapshot-dominating-file)	; detect JJ repo
-    (progn
-      (let ((absfile (buffer-file-name))
-	          (buffer (get-buffer-create jj-auto-snapshot--log-buffer-name))
- 	          (process-connection-type nil))	; use a pipe instead of a pty
+  (progn
+    (let ((absfile (buffer-file-name))
+	        (buffer (get-buffer-create jj-auto-snapshot--log-buffer-name))
+ 	        (process-connection-type nil))	; use a pipe instead of a pty
+      (when (jj-auto-snapshot-dominating-file absfile)	; detect JJ repo
         (let* ((cmd (if (functionp jj-auto-snapshot-snapshot-command)
                         (funcall jj-auto-snapshot-snapshot-command)
                       jj-auto-snapshot-snapshot-command))
