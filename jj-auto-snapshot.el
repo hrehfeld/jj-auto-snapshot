@@ -15,6 +15,12 @@
 (defvar jj-auto-snapshot-snapshot-command '("jj" "--no-pager" "status" "--color=never")
   "Command to execute to snapshot the current repository. Should be a list of strings to hand to `start-process' or a function returning such list.")
 
+(defcustom jj-auto-snapshot-snapshot-hook 'before-save-hook
+  "Hook variable to attach snapshot taking function `jj-auto-snapshot--take-snapshot' to."
+  :type 'hook
+  :group 'jj-auto-snapshot
+  )
+
 (defun jj-auto-snapshot-dominating-file (start-at-path)
   (locate-dominating-file start-at-path ".jj"))
 
@@ -52,8 +58,8 @@ the `jj-auto-snapshot--log-buffer-name' buffer.
   :lighter " jjsnap"
   :var jj-auto-snapshot-mode
   (if jj-auto-snapshot-mode
-      (add-hook 'before-save-hook 'jj-auto-snapshot--take-snapshot nil 'local)
-    (remove-hook 'before-save-hook 'jj-auto-snapshot--take-snapshot 'local)))
+      (add-hook jj-auto-snapshot-snapshot-hook 'jj-auto-snapshot--take-snapshot nil 'local)
+    (remove-hook jj-auto-snapshot-snapshot-hook 'jj-auto-snapshot--take-snapshot 'local)))
 
 ;;;###autoload
 (define-minor-mode jj-auto-snapshot-global-mode
@@ -61,8 +67,8 @@ the `jj-auto-snapshot--log-buffer-name' buffer.
   :lighter " jjsnap"
   :global t
   (if jj-auto-snapshot-global-mode
-      (add-hook 'before-save-hook 'jj-auto-snapshot--take-snapshot)
-    (remove-hook 'before-save-hook 'jj-auto-snapshot--take-snapshot)))
+      (add-hook jj-auto-snapshot-snapshot-hook 'jj-auto-snapshot--take-snapshot)
+    (remove-hook jj-auto-snapshot-snapshot-hook 'jj-auto-snapshot--take-snapshot)))
 
 (provide 'jj-auto-snapshot)
 
