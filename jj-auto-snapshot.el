@@ -4,6 +4,11 @@
 ;; see also https://github.com/tim-janik/jj-fzf/blob/trunk/contrib/jj-undirty.el
 
 ;;; Code:
+(defgroup jj-auto-snapshot nil
+  "Automatically snapshot the current JJ repository on every save."
+  :group 'tools
+  :prefix "jj-auto-snapshot-")
+
 (defvar jj-auto-snapshot--log-buffer-name "*jj-auto-snapshot-mode-log*"
   "Automatically snapshot the current JJ repository on every save.")
 
