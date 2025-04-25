@@ -1,4 +1,9 @@
-;;https://github.com/tim-janik/jj-fzf/blob/trunk/contrib/jj-undirty.el
+;;; jj-auto-snapshot.el --- Automatically snapshot the current JJ repository on every save.  -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;; see also https://github.com/tim-janik/jj-fzf/blob/trunk/contrib/jj-undirty.el
+
+;;; Code:
 (defvar jj-auto-snapshot--log-buffer-name "*jj-auto-snapshot-mode-log*"
   "Automatically snapshot the current JJ repository on every save.")
 
@@ -55,3 +60,5 @@ the `jj-auto-snapshot--log-buffer-name' buffer.
     (remove-hook 'before-save-hook 'jj-auto-snapshot--take-snapshot)))
 
 (provide 'jj-auto-snapshot)
+
+;;; jj-auto-snapshot.el ends here
