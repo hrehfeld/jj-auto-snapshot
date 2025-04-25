@@ -36,6 +36,7 @@ the `jj-auto-snapshot--log-buffer-name' buffer.
 ;; no idea why this is needed, but I get undefined variable errors without it
 (defvar-local jj-auto-snapshot-mode nil "Automatically snapshot the current JJ repository on every save.")
 
+;;;###autoload
 (define-minor-mode jj-auto-snapshot-mode
   "Automatically snapshot the current JJ repository on every save."
   :lighter " jjsnap"
@@ -44,6 +45,7 @@ the `jj-auto-snapshot--log-buffer-name' buffer.
       (add-hook 'before-save-hook 'jj-auto-snapshot--take-snapshot nil 'local)
     (remove-hook 'before-save-hook 'jj-auto-snapshot--take-snapshot 'local)))
 
+;;;###autoload
 (define-minor-mode jj-auto-snapshot-global-mode
   "Automatically snapshot the current JJ repository on every save."
   :lighter " jjsnap"
