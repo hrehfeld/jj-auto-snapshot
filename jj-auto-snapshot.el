@@ -9,8 +9,10 @@
   :group 'tools
   :prefix "jj-auto-snapshot-")
 
-(defvar jj-auto-snapshot--log-buffer-name "*jj-auto-snapshot-mode-log*"
-  "Automatically snapshot the current JJ repository on every save.")
+(defcustom jj-auto-snapshot--log-buffer-name "*jj-auto-snapshot-mode-log*"
+  "Automatically snapshot the current JJ repository on every save."
+  :type 'string
+  :group 'jj-auto-snapshot)
 
 (defun jj-auto-snapshot-commit-command ()
   "Commit using jj commit.
@@ -22,8 +24,11 @@ See `jj-auto-snapshot-snapshot-command'."
             (append args (list "-m" file-relative-name file-relative-name)))))
 
 
-(defvar jj-auto-snapshot-snapshot-command #'jj-auto-snapshot-commit-command
-  "Command to execute to snapshot the current repository. Should be a list of strings to hand to `start-process' or a function returning such list.")
+(defcustom jj-auto-snapshot-snapshot-command #'jj-auto-snapshot-commit-command
+  "Command to execute to snapshot the current repository. Should be a list of strings to hand to `start-process' or a function returning such list."
+  :type '(choice (function :tag "Function")
+                 (repeat string))
+  :group 'jj-auto-snapshot)
 
 (defcustom jj-auto-snapshot-snapshot-hook 'before-save-hook
   "Hook variable to attach snapshot taking function `jj-auto-snapshot--take-snapshot' to."
