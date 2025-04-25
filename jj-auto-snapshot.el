@@ -12,7 +12,17 @@
 (defvar jj-auto-snapshot--log-buffer-name "*jj-auto-snapshot-mode-log*"
   "Automatically snapshot the current JJ repository on every save.")
 
-(defvar jj-auto-snapshot-snapshot-command '("jj" "--no-pager" "status" "--color=never")
+(defun jj-auto-snapshot-commit-command ()
+  "Commit using jj commit.
+
+See `jj-auto-snapshot-snapshot-command'."
+  (let ((args '("jj" "--no-pager" "commit")))
+    (cl-assert (buffer-file-name) t "Non-file buffer.")
+    (let ((file-relative-name (file-relative-name (buffer-file-name) (jj-auto-snapshot-dominating-file (buffer-file-name)))))
+            (append args (list "-m" file-relative-name file-relative-name)))))
+
+
+(defvar jj-auto-snapshot-snapshot-command #'jj-auto-snapshot-commit-command
   "Command to execute to snapshot the current repository. Should be a list of strings to hand to `start-process' or a function returning such list.")
 
 (defcustom jj-auto-snapshot-snapshot-hook 'before-save-hook
