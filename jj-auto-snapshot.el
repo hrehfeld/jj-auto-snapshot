@@ -20,12 +20,17 @@
 See `jj-auto-snapshot-snapshot-command'."
   (let ((args '("jj" "--no-pager" "commit")))
     (cl-assert (buffer-file-name) t "Non-file buffer.")
-    (let ((file-relative-name (file-relative-name (buffer-file-name) (jj-auto-snapshot-dominating-file (buffer-file-name)))))
-            (append args (list "-m" file-relative-name file-relative-name)))))
+    (let ((file-name (buffer-file-name)))
+            (append args (list "-m" (file-relative-name file-name) file-name)))))
 
 
 (defcustom jj-auto-snapshot-snapshot-command #'jj-auto-snapshot-commit-command
-  "Command to execute to snapshot the current repository. Should be a list of strings to hand to `start-process' or a function returning such list."
+  "Command to execute to snapshot the current repository and/or buffer.
+
+Should be a list of strings to hand to `start-process' or a function returning
+such list.
+
+Will be run with `default-directory' set to the repo root."
   :type '(choice (function :tag "Function")
                  (repeat string))
   :group 'jj-auto-snapshot)
@@ -47,22 +52,28 @@ the `jj-auto-snapshot--log-buffer-name' buffer.
 "
   (interactive)
   (progn
-    (let ((absfile (buffer-file-name))
-	        (buffer (get-buffer-create jj-auto-snapshot--log-buffer-name))
- 	        (process-connection-type nil))	; use a pipe instead of a pty
-      (when (jj-auto-snapshot-dominating-file absfile)	; detect JJ repo
-        (let* ((cmd (if (functionp jj-auto-snapshot-snapshot-command)
+    (let ((buffer (get-buffer-create jj-auto-snapshot--log-buffer-name))
+          	; use a pipe instead of a pty
+ 	        (process-connection-type nil)
+          (repo-dir (jj-auto-snapshot-dominating-file (buffer-file-name))))
+      (when repo-dir	; detect JJ repo
+        (let* ((default-directory repo-dir)
+               (cmd (if (functionp jj-auto-snapshot-snapshot-command)
                         (funcall jj-auto-snapshot-snapshot-command)
                       jj-auto-snapshot-snapshot-command))
                (cmd-str (string-join (mapcar #'shell-quote-argument cmd) " ")))
-	        (with-current-buffer buffer
+          (with-current-buffer buffer
 	          (goto-char (point-max))		; append to end of buffer
-	          (insert "\n# jj-auto-snapshot--take-snapshot: " absfile "\n" cmd-str "\n")
-            (let ((default-directory (file-name-directory absfile)))
+            (read-only-mode -1)
+	          (insert (format "
+# jj-auto-snapshot--take-snapshot: %s
+[%s] %s
+" (or (buffer-file-name) (buffer-name)) default-directory cmd-str))
+            (read-only-mode 1)
               (apply 'start-process
                      cmd-str
                      buffer
-                     cmd)))
+                     cmd))
 	        )))))
 
 ;; no idea why this is needed, but I get undefined variable errors without it
