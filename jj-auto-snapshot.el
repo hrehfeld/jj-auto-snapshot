@@ -30,7 +30,7 @@ See `jj-auto-snapshot-snapshot-command'."
                  (repeat string))
   :group 'jj-auto-snapshot)
 
-(defcustom jj-auto-snapshot-snapshot-hook 'before-save-hook
+(defcustom jj-auto-snapshot-snapshot-hook 'after-save-hook
   "Hook variable to attach snapshot taking function `jj-auto-snapshot--take-snapshot' to."
   :type 'hook
   :group 'jj-auto-snapshot
