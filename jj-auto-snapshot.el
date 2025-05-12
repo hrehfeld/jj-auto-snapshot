@@ -58,10 +58,11 @@ the `jj-auto-snapshot--log-buffer-name' buffer.
 	        (with-current-buffer buffer
 	          (goto-char (point-max))		; append to end of buffer
 	          (insert "\n# jj-auto-snapshot--take-snapshot: " absfile "\n" cmd-str "\n")
-            (apply 'start-process
-                   cmd-str
-                   buffer
-                   cmd))
+            (let ((default-directory (file-name-directory absfile)))
+              (apply 'start-process
+                     cmd-str
+                     buffer
+                     cmd)))
 	        )))))
 
 ;; no idea why this is needed, but I get undefined variable errors without it
